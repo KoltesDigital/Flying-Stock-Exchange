@@ -40,7 +40,6 @@ economy.start = function(){
 	var planeX = constants.width / 2;
 	var planeY = constants.height / 2;
 	var planeSpeed = constants.initialSpeed;
-	var planeGravitySpeed = 0;
 	
 	var mouseX = constants.width / 2;
 	var mouseY = constants.height / 2;
@@ -53,7 +52,7 @@ economy.start = function(){
 	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(160, 40).setScale(2, 2).setPosition(constants.width / 2, constants.height / 2);
 	interfaceLayer.appendChild(startButton);
 	
-	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setPosition(constants.width / 2, constants.crashY).setOpacity(0);
+	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 /*
 	director.makeMobileWebAppCapable();
@@ -108,39 +107,85 @@ economy.start = function(){
 		}
 	});
 	
-	var updateLoop = function(dt) {
-		if (dt > 20) {
-			dt = 20;
+	var playing = false;
+	var crashed = false;
+
+	var start = function() {
+		playing = false;
+		planeX = constants.width / 2;
+		planeY = constants.height / 2;
+		planeSpeed = constants.initialSpeed;
+		bgX = 0;
+		setTimeout(function() {
+			crashed = false;
+			playing = true;
+		}, 300);
+	};
+	
+	var crash = function() {
+		crashed = true;
+		var animation = new lime.animation.Spawn(
+			new lime.animation.FadeTo(1).setDuration(.2),
+			new lime.animation.MoveBy(0, -100).setDuration(.2)
+		);
+		crashLabel.setPosition(constants.width / 2, constants.crashY).runAction(animation);
+		setTimeout(function() {
+			var crashAnimation = new lime.animation.Spawn(
+				new lime.animation.FadeTo(0).setDuration(.2),
+				new lime.animation.MoveBy(0, -100).setDuration(.2)
+			);
+			crashLabel.runAction(crashAnimation);
+			
+			var startAnimation = new lime.animation.FadeTo(1).setDuration(.2);
+			startButton.setScale(2).runAction(startAnimation);
+		}, 1000);
+	};
+	
+	lime.scheduleManager.schedule(function(dt) {
+		var angle = 0;
+		if (playing) {
+			if (dt > 20) {
+				dt = 20;
+			}
+			
+			angle = (mouseY - constants.height / 2) * constants.pixelToAngle;
+			if (crashed) {
+				angle = 0;
+			}
+			
+			var angleRadians = goog.math.toRadians(angle);
+			
+			if (crashed) {
+				planeSpeed *= constants.groundFriction;
+			} else {
+				planeSpeed *= constants.friction;
+			}
+			
+			var speedX = planeSpeed * Math.cos(angleRadians);
+			var speedY = (crashed) ? 0 : (planeSpeed * Math.sin(angleRadians) +Math.exp(- planeSpeed * constants.stall) * constants.gravity * dt);
+			
+			planeSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
+			
+			var stepX = speedX * dt;
+			planeX += stepX;
+			planeY += speedY * dt;
+			
+			bgX = (bgX + stepX) % 256;
+			
+			if (planeY >= constants.crashY) {
+				planeY = constants.crashY;
+				if (!crashed) {
+					crash();
+				}
+			}
 		}
-		
-		var angle = (mouseY - constants.height / 2) * constants.pixelToAngle;
-		var angleRadians = goog.math.toRadians(angle);
-		
-		planeSpeed *= constants.friction;
-		var speedX = planeSpeed * Math.cos(angleRadians);
-		var speedY = planeSpeed * Math.sin(angleRadians) + Math.exp(- planeSpeed * constants.stall) * constants.gravity * dt;
-		planeSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
-		
-		var stepX = speedX * dt;
-		planeX += stepX;
-		planeY += speedY * dt;
-		
-		bgX = (bgX + stepX) % 256;
 		
 		backgroundLayer.setPosition(-bgX, 0);
 		
-		if (planeY > constants.crashY) {
-			lime.scheduleManager.unschedule(updateLoop);
-			var animation = new lime.animation.Spawn(
-				new lime.animation.FadeTo(1).setDuration(.2),
-				new lime.animation.MoveBy(0, -100).setDuration(.2)
-			);
-			crashLabel.runAction(animation);
-		}
-		
 		planeSprite.setPosition(constants.width / 2, planeY);
 		planeSprite.setRotation(-angle);
-	};
+		console.log(playing);
+	});
 	
 	goog.events.listen(startButton, ['mousedown', 'touchstart'], function(event) {
 		var animation = new lime.animation.Spawn(
@@ -148,10 +193,7 @@ economy.start = function(){
 			new lime.animation.ScaleTo(4).setDuration(.2)
 		);
 		startButton.runAction(animation);
-		goog.events.listen(animation, lime.animation.Event.STOP, function() {
-			//interfaceLayer.removeChild(startButton);
-			lime.scheduleManager.schedule(updateLoop);
-		});
+		goog.events.listen(animation, lime.animation.Event.STOP, start);
 	});
 }
 

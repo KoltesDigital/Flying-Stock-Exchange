@@ -6,6 +6,8 @@ constants.friction = 0.999;
 
 constants.gravity = 0.02;
 
+constants.groundFriction = 0.95;
+
 constants.stall = 2;
 
 constants.height = 768;
