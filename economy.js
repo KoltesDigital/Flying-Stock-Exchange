@@ -1,6 +1,13 @@
+/**
+ * Flying Stock Exchange
+ * @author Jonathan Giroux (Bloutiouf)
+ * @license MIT license <http://www.opensource.org/licenses/MIT>
+ */
+
 goog.provide('economy');
 
 goog.require('goog.math');
+goog.require('goog.math.Coordinate');
 goog.require('lime.Director');
 goog.require('lime.Scene');
 goog.require('lime.Layer');
@@ -31,13 +38,16 @@ economy.start = function(){
 	
 	var bgX = 0;
 	
+	var bonusLayer = new lime.Layer().setPosition(constants.width / 2, 0);
+	scene.appendChild(bonusLayer);
+	
 	var planeLayer = new lime.Layer();
 	scene.appendChild(planeLayer);
 	
 	var planeSprite = new lime.Sprite().setFill(constants.imagesPath + 'plane.png').setAnchorPoint(0.5, 0.5);
 	planeLayer.appendChild(planeSprite);
 	
-	var planeX = constants.width / 2;
+	var planeX = 0;
 	var planeY = constants.height / 2;
 	var planeSpeed = constants.initialSpeed;
 	
@@ -112,18 +122,60 @@ economy.start = function(){
 	
 	var playing = false;
 	var crashed = false;
+	var dollarBonus, upBonus, downBonus;
 
+	var bonus = {
+		dollar: {
+			filename: 'dollar.png',
+			min: 600,
+			max: 800,
+			handler: function() {
+			}
+		},
+		up: {
+			filename: 'up.png',
+			min: 1000,
+			max: 2000,
+			handler: function() {
+				planeSpeed += constants.bonusUp;
+			}
+		},
+		down: {
+			filename: 'down.png',
+			min: 1000,
+			max: 3000,
+			handler: function() {
+				planeSpeed += constants.bonusDown;
+				if (planeSpeed < 0) {
+					planeSpeed = 0;
+				}
+			}
+		}
+	};
+	
+	var newBonus = function(i) {
+		if (!bonus[i].sprite) {
+			bonus[i].sprite = new lime.Sprite().setFill(constants.imagesPath + bonus[i].filename).setAnchorPoint(0.5, 0.5);
+		}
+		bonus[i].sprite.setOpacity(1).setScale(1).setPosition(Math.max(goog.math.uniformRandom(bonus[i].min, bonus[i].max) / (bonus[i].rate || 1), constants.width / 2 + 32), goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax));
+		delete bonus[i].took;
+		bonusLayer.appendChild(bonus[i].sprite);
+	};
+	
 	var start = function() {
 		playing = false;
 		crashed = false;
-		planeX = constants.width / 2;
+		planeX = 0;
 		planeY = constants.height / 2;
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
 		
+		for (var i in bonus) {
+			newBonus(i);
+		}
+		
 		var startCountIndex = 3;
-		var startCount;
-		startCount = function() {
+		var startCount = function() {
 			var text = startCountIndex || 'GO';
 			var animation = new lime.animation.Spawn(
 				new lime.animation.FadeTo(0).setDuration(.2),
@@ -169,12 +221,12 @@ economy.start = function(){
 				dt = 20;
 			}
 			
-			angle = (mouseY - constants.height / 2) * constants.pixelToAngle;
+			var angleRadians = Math.atan2(mouseY - planeY, 500);
 			if (crashed) {
-				angle = 0;
+				angleRadians = 0;
 			}
 			
-			var angleRadians = goog.math.toRadians(angle);
+			angle = goog.math.toDegrees(angleRadians);
 			
 			if (crashed) {
 				planeSpeed *= constants.groundFriction;
@@ -192,6 +244,25 @@ economy.start = function(){
 			planeY += speedY * dt;
 			
 			bgX = (bgX + stepX) % 256;
+			
+			var planePosition = new goog.math.Coordinate(0, planeY);
+			for (var i in bonus) {
+				var position = bonus[i].sprite.getPosition();
+				position.x -= stepX * constants.bonusSpeed;
+				bonus[i].sprite.setPosition(position)
+				if (!bonus[i].took && goog.math.Coordinate.distance(position, planePosition) < 32) {
+					bonus[i].took = true;
+					var animation = new lime.animation.Spawn(
+						new lime.animation.FadeTo(0).setDuration(.5),
+						new lime.animation.ScaleTo(2).setDuration(.5)
+					);
+					bonus[i].sprite.runAction(animation);
+					bonus[i].handler();
+				}
+				if (position.x < - constants.width / 2 - 32) {
+					newBonus(i);
+				}
+			}
 			
 			if (planeY >= constants.crashY) {
 				planeY = constants.crashY;

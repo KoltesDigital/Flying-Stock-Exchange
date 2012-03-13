@@ -1,5 +1,11 @@
 goog.provide('constants');
 
+constants.bonusYmin = 150;
+constants.bonusYmax = 618;
+constants.bonusSpeed = 0.5;
+constants.bonusUp = 1;
+constants.bonusDown = -1;
+
 constants.crashY = 668;
 
 constants.friction = 0.999;
@@ -8,7 +14,7 @@ constants.gravity = 0.02;
 
 constants.groundFriction = 0.95;
 
-constants.stall = 2;
+constants.stall = 5;
 
 constants.height = 768;
 
