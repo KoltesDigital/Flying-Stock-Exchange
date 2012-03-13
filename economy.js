@@ -52,6 +52,9 @@ economy.start = function(){
 	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(160, 40).setScale(2, 2).setPosition(constants.width / 2, constants.height / 2);
 	interfaceLayer.appendChild(startButton);
 	
+	var startCountLabel = new lime.Label().setFontColor('#000000').setFontSize(60).setOpacity(0).setPosition(constants.width / 2, constants.height / 2);
+	interfaceLayer.appendChild(startCountLabel);
+	
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 /*
@@ -112,14 +115,32 @@ economy.start = function(){
 
 	var start = function() {
 		playing = false;
+		crashed = false;
 		planeX = constants.width / 2;
 		planeY = constants.height / 2;
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
-		setTimeout(function() {
-			crashed = false;
-			playing = true;
-		}, 300);
+		
+		var startCountIndex = 3;
+		var startCount;
+		startCount = function() {
+			var text = startCountIndex || 'GO';
+			var animation = new lime.animation.Spawn(
+				new lime.animation.FadeTo(0).setDuration(.2),
+				new lime.animation.ScaleTo(2).setDuration(.2)
+			);
+			startCountLabel.setText(text).setOpacity(1).setScale(1).runAction(animation);
+			
+			if (!startCountIndex) {
+				playing = true;
+			} else {
+				--startCountIndex;
+				goog.events.listen(animation, lime.animation.Event.STOP, function() {
+					setTimeout(startCount, 300);
+				});
+			}
+		};
+		setTimeout(startCount, 300);
 	};
 	
 	var crash = function() {
@@ -184,7 +205,6 @@ economy.start = function(){
 		
 		planeSprite.setPosition(constants.width / 2, planeY);
 		planeSprite.setRotation(-angle);
-		console.log(playing);
 	});
 	
 	goog.events.listen(startButton, ['mousedown', 'touchstart'], function(event) {
