@@ -1,27 +1,27 @@
 goog.provide('constants');
 
-constants.bonusYmin = 150;
-constants.bonusYmax = 618;
-constants.bonusSpeed = 0.5;
-constants.bonusUp = 1;
-constants.bonusDown = -1;
+/** @const */ /** @const */ constants.bonusYmin = 150;
+/** @const */ constants.bonusYmax = 618;
+/** @const */ constants.bonusSpeed = 0.5;
+/** @const */ constants.bonusUp = 1;
+/** @const */ constants.bonusDown = -1;
 
-constants.crashY = 668;
+/** @const */ constants.crashY = 668;
 
-constants.friction = 0.999;
+/** @const */ constants.friction = 0.999;
 
-constants.gravity = 0.02;
+/** @const */ constants.gravity = 0.02;
 
-constants.groundFriction = 0.95;
+/** @const */ constants.groundFriction = 0.95;
 
-constants.stall = 5;
+/** @const */ constants.stall = 5;
 
-constants.height = 768;
+/** @const */ constants.height = 768;
 
-constants.imagesPath = 'images/';
+/** @const */ constants.imagesPath = 'images/';
 
-constants.initialSpeed = 2;
+/** @const */ constants.initialSpeed = 2;
 
-constants.pixelToAngle = 0.1;
+/** @const */ constants.pixelToAngle = 0.1;
 
-constants.width = 1024;
+/** @const */ constants.width = 1024;
