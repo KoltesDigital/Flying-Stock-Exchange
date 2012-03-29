@@ -8,13 +8,10 @@ goog.provide('constants');
 /** @const */ constants.bonusScoreMax = 150;
 /** @const */ constants.bonusSpeed = 0.8;
 
+/** @const */ constants.crashFriction = 0.95;
 /** @const */ constants.crashY = 668;
 
-/** @const */ constants.friction = 0.999;
-
 /** @const */ constants.gravity = 0.02;
-
-/** @const */ constants.groundFriction = 0.95;
 
 /** @const */ constants.height = 768;
 

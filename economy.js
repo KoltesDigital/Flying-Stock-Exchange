@@ -47,7 +47,7 @@ economy.start = function(){
 	var planeSprite = new lime.Sprite().setFill(constants.imagesPath + 'plane.png').setAnchorPoint(0.5, 0.5);
 	planeLayer.appendChild(planeSprite);
 	
-	var planeX = 0;
+	var planeX = -32;
 	var planeY = constants.height / 2;
 	var planeSpeed = constants.initialSpeed;
 	
@@ -68,7 +68,7 @@ economy.start = function(){
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 	
-	var scoreLabel = new lime.Label('$0').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
+	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
 	interfaceLayer.appendChild(scoreLabel);
 	
 	director.replaceScene(scene);
@@ -93,6 +93,7 @@ economy.start = function(){
 	var score = 0;
 	var bonusTimeout = 0;
 	var bonuses = [];
+	var angle = 0;
 	
 	var start = function() {
 		playing = false;
@@ -102,7 +103,9 @@ economy.start = function(){
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
 		score = constants.initialScore;
+		scoreLabel.setText('$' + Math.round(score));
 		bonusTimeout = 0;
+		angle = 0;
 		
 		var startCountIndex = 3;
 		var startCount = function() {
@@ -145,21 +148,23 @@ economy.start = function(){
 	};
 	
 	lime.scheduleManager.schedule(function(dt) {
-		var angle = 0;
 		if (playing) {
 			if (dt > 20) {
 				dt = 20;
 			}
 			
-			var angleRadians = Math.atan2(mouseY - planeY, 500);
+			var speedX, speedY;
+			var speedX, speedY;
+			
 			if (crashed) {
-				angleRadians = 0;
+				angle += (Math.PI / 2 - angle) * 0.01;
+				var speedX = planeSpeed * Math.cos(angle);
+				var speedY = planeSpeed * Math.sin(angle);
+			} else {
+				angle = Math.atan2(mouseY - planeY, 500);
+				var speedX = planeSpeed;
+				var speedY = planeSpeed * Math.sin(angle);
 			}
-			
-			angle = goog.math.toDegrees(angleRadians);
-			
-			var speedX = planeSpeed;
-			var speedY = (crashed) ? 0 : (planeSpeed * Math.sin(angleRadians));
 			
 			var stepX = speedX * dt;
 			planeY += speedY * dt;
@@ -172,7 +177,8 @@ economy.start = function(){
 				var position = bonus.sprite.getPosition();
 				position.x -= stepX * constants.bonusSpeed;
 				bonus.sprite.setPosition(position)
-				if (!bonus.taken && goog.math.Coordinate.distance(position, planePosition) < 32) {
+				
+				if (!crashed && !bonus.taken && goog.math.Coordinate.distance(position, planePosition) < 32) {
 					bonus.taken = true;
 					score += bonus.score;
 					
@@ -207,7 +213,7 @@ economy.start = function(){
 				
 				if (score < 0) {
 					score = 0;
-					crashed = true;
+					crash();
 				}
 				
 				scoreLabel.setText('$' + Math.round(score));
@@ -217,7 +223,7 @@ economy.start = function(){
 		backgroundLayer.setPosition(-bgX, 0);
 		
 		planeSprite.setPosition(planeX, planeY);
-		planeSprite.setRotation(-angle);
+		planeSprite.setRotation(-goog.math.toDegrees(angle));
 	});
 	
 	goog.events.listen(startButton, ['mousedown', 'touchstart'], function(event) {
