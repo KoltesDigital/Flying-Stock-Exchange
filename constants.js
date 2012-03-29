@@ -4,6 +4,8 @@ goog.provide('constants');
 /** @const */ constants.bonusXmax = 1200;
 /** @const */ constants.bonusYmin = 150;
 /** @const */ constants.bonusYmax = 618;
+/** @const */ constants.bonusScoreMin = 50;
+/** @const */ constants.bonusScoreMax = 150;
 /** @const */ constants.bonusSpeed = 0.8;
 
 /** @const */ constants.crashY = 668;
@@ -14,13 +16,15 @@ goog.provide('constants');
 
 /** @const */ constants.groundFriction = 0.95;
 
-/** @const */ constants.stall = 5;
-
 /** @const */ constants.height = 768;
 
 /** @const */ constants.imagesPath = 'images/';
 
+/** @const */ constants.initialScore = 1000;
+
 /** @const */ constants.initialSpeed = 1;
+
+/** @const */ constants.loss = 0.1;
 
 /** @const */ constants.pixelToAngle = 0.1;
 

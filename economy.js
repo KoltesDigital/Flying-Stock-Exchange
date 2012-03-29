@@ -68,6 +68,9 @@ economy.start = function(){
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 	
+	var scoreLabel = new lime.Label('$0').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
+	interfaceLayer.appendChild(scoreLabel);
+	
 	director.replaceScene(scene);
 	
 	goog.events.listen(div, 'mousemove', function(event) {
@@ -87,6 +90,7 @@ economy.start = function(){
 	
 	var playing = false;
 	var crashed = false;
+	var score = 0;
 	var bonusTimeout = 0;
 	var bonuses = [];
 	
@@ -97,6 +101,7 @@ economy.start = function(){
 		planeY = constants.height / 2;
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
+		score = constants.initialScore;
 		bonusTimeout = 0;
 		
 		var startCountIndex = 3;
@@ -169,6 +174,8 @@ economy.start = function(){
 				bonus.sprite.setPosition(position)
 				if (!bonus.taken && goog.math.Coordinate.distance(position, planePosition) < 32) {
 					bonus.taken = true;
+					score += bonus.score;
+					
 					var animation = new lime.animation.Spawn(
 						new lime.animation.FadeTo(0).setDuration(.5),
 						new lime.animation.ScaleTo(2).setDuration(.5)
@@ -186,12 +193,24 @@ economy.start = function(){
 			bonusTimeout -= stepX;
 			if (bonusTimeout < 0) {
 				bonusTimeout = goog.math.uniformRandom(constants.bonusXmin, constants.bonusXmax);
+				var bonusScore = goog.math.uniformRandom(constants.bonusScoreMin, constants.bonusScoreMax);
 				var bonus = {
-					sprite: new lime.Sprite().setFill(constants.imagesPath + 'dollar.png').setPosition(constants.width + 32, goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax)).setScale(1),
-					value: 1
+					sprite: new lime.Sprite().setFill(constants.imagesPath + 'dollar.png').setPosition(constants.width + 32, goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax)).setScale(bonusScore / constants.bonusScoreMax),
+					score: bonusScore
 				};
 				bonuses.push(bonus);
 				bonusLayer.appendChild(bonus.sprite);
+			}
+			
+			if (!crashed) {
+				score -= dt * constants.loss;
+				
+				if (score < 0) {
+					score = 0;
+					crashed = true;
+				}
+				
+				scoreLabel.setText('$' + Math.round(score));
 			}
 		}
 		
