@@ -8,6 +8,10 @@ goog.provide('constants');
 /** @const */ constants.bonusScoreMax = 150;
 /** @const */ constants.bonusSpeed = 0.8;
 
+/** @const */ constants.chimeDuration = 500;
+/** @const */ constants.chimeFade = 0.002;
+/** @const */ constants.chimeVolume = 0.5;
+
 /** @const */ constants.crashFriction = 0.95;
 /** @const */ constants.crashY = 668;
 
@@ -17,7 +21,7 @@ goog.provide('constants');
 
 /** @const */ constants.height = 768;
 
-/** @const */ constants.imagesPath = 'images/';
+/** @const */ constants.assetPath = 'assets/';
 
 /** @const */ constants.initialScore = 1000;
 
@@ -25,8 +29,12 @@ goog.provide('constants');
 
 /** @const */ constants.loss = 0.1;
 
+/** @const */ constants.windFade = 0.001;
+
 /** @const */ constants.pixelToAngle = 0.1;
 
 /** @const */ constants.timeFactor = 1000000;
+
+/** @const */ constants.toys = 3;
 
 /** @const */ constants.width = 1024;

@@ -15,10 +15,12 @@ goog.require('lime.Label');
 goog.require('lime.Layer');
 goog.require('lime.Renderer');
 goog.require('lime.Scene');
-goog.require('lime.animation.Spawn');
 goog.require('lime.animation.FadeTo');
-goog.require('lime.animation.ScaleTo');
 goog.require('lime.animation.MoveBy');
+goog.require('lime.animation.ScaleTo');
+goog.require('lime.animation.Sequence');
+goog.require('lime.animation.Spawn');
+goog.require('lime.audio.Audio');
 goog.require('constants');
 
 function scoreColor(score) {
@@ -39,15 +41,28 @@ economy.start = function() {
 	var director = new lime.Director(div, constants.width, constants.height),
 		scene = new lime.Scene();
 
+	var skyLayer = new lime.Layer();
+	scene.appendChild(skyLayer);
+	
+	for (var i = 0; i < 2; ++i) {
+		var sprite = new lime.Sprite().setFill(constants.assetPath + 'sky.png').setAnchorPoint(0, 0).setPosition(i * 1600, 0);
+		skyLayer.appendChild(sprite);
+	}
+	
+	var skyX = 0;
+	
 	var backgroundLayer = new lime.Layer();
 	scene.appendChild(backgroundLayer);
 	
 	for (var i = 0; i < 5; ++i) {
-		var sprite = new lime.Sprite().setFill(constants.imagesPath + 'background.png').setAnchorPoint(0, 0).setPosition(i * 256, 0);
+		var sprite = new lime.Sprite().setFill(constants.assetPath + 'background.png').setAnchorPoint(0, 0).setPosition(i * 256, 0);
 		backgroundLayer.appendChild(sprite);
 	}
 	
 	var bgX = 0;
+	
+	var childSprite = new lime.Sprite().setFill(constants.assetPath + 'childb.png').setOpacity(0);
+	backgroundLayer.appendChild(childSprite);
 	
 	var curve = [];
 	
@@ -74,7 +89,7 @@ economy.start = function() {
 	var planeLayer = new lime.Layer();
 	scene.appendChild(planeLayer);
 	
-	var planeSprite = new lime.Sprite().setFill(constants.imagesPath + 'plane.png').setAnchorPoint(0.5, 0.5);
+	var planeSprite = new lime.Sprite().setFill(constants.assetPath + 'plane.png').setAnchorPoint(0.5, 0.5);
 	planeLayer.appendChild(planeSprite);
 	
 	var planeX = -32;
@@ -89,7 +104,7 @@ economy.start = function() {
 	var interfaceLayer = new lime.Layer();
 	scene.appendChild(interfaceLayer);
 	
-	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(160, 40).setScale(2, 2).setPosition(constants.width / 2, constants.height / 2);
+	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(320, 80)/*.setScale(2, 2)*/.setPosition(constants.width / 2, constants.height / 2);
 	interfaceLayer.appendChild(startButton);
 	
 	var startCountLabel = new lime.Label().setFontColor('#000000').setFontSize(60).setOpacity(0).setPosition(constants.width / 2, constants.height / 2);
@@ -105,6 +120,19 @@ economy.start = function() {
 	interfaceLayer.appendChild(scoreLabel);
 	
 	director.replaceScene(scene);
+	
+	var wind = new lime.audio.Audio(constants.assetPath + 'wind.ogg');
+	wind.baseElement.loop = true;
+	
+	var chimes = new lime.audio.Audio(constants.assetPath + 'chimes.mp3');
+	var chimeTimes = [
+		0.354,
+		1.808,
+		3.314,
+		4.736,
+		6.159,
+		7.532
+	];
 	
 	goog.events.listen(div, 'mousemove', function(event) {
 		if (event.pageX == null)
@@ -130,13 +158,15 @@ economy.start = function() {
 	var angle = 0;
 	var curveTimeout = 0;
 	var planePosition;
+	var chimeTimeout = 0;
 	
 	var start = function() {
 		playing = false;
 		crashed = false;
-		planeX = constants.width / 4;
-		planeY = constants.height / 2;
+		planeX = 210;
+		planeY = 580;
 		planeSpeed = constants.initialSpeed;
+		angle = -0.2;
 		bgX = 0;
 		score = constants.initialScore;
 		scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
@@ -145,23 +175,31 @@ economy.start = function() {
 		bonusTimeout = 0;
 		bonuses = [];
 		bonusLayer.removeAllChildren();
-		angle = 0;
 		curveTimeout = 0;
 		planePosition = new goog.math.Coordinate(planeX, planeY);
 		curve = [planePosition];
 		canvas.update();
 		
+		wind.baseElement.volume = 0;
+		
+		childSprite.setFill(constants.assetPath + 'childa.png').setPosition(256, 650).setOpacity(1);
+		
 		var startCountIndex = 3;
 		var startCount = function() {
 			var text = startCountIndex || 'GO';
 			var animation = new lime.animation.Spawn(
-				new lime.animation.FadeTo(0).setDuration(.2),
+				new lime.animation.FadeTo(0).setDuration(.3),
 				new lime.animation.ScaleTo(2).setDuration(.2)
 			);
 			startCountLabel.setText(text).setOpacity(1).setScale(1).runAction(animation);
 			
 			if (!startCountIndex) {
 				playing = true;
+				planeX = constants.width / 4;
+				childSprite.setFill(constants.assetPath + 'childb.png');
+				var animation = new lime.animation.FadeTo(0).setDuration(.3);
+				childSprite.runAction(animation);
+				wind.play();
 			} else {
 				--startCountIndex;
 				goog.events.listen(animation, lime.animation.Event.STOP, function() {
@@ -187,8 +225,18 @@ economy.start = function() {
 			crashLabel.runAction(crashAnimation);
 			
 			var startAnimation = new lime.animation.FadeTo(1).setDuration(.2);
-			startButton.setScale(2).runAction(startAnimation);
+			startButton.setScale(1).runAction(startAnimation);
 		}, 1000);
+	};
+	
+	var playChime = function() {
+		var i = goog.math.randomInt(chimeTimes.length);
+		var time = chimeTimes[i];
+		chimes.stop();
+		chimes.baseElement.currentTime = time;
+		chimes.baseElement.volume = constants.chimeVolume;
+		chimes.play();
+		chimeTimeout = constants.chimeDuration;
 	};
 	
 	lime.scheduleManager.schedule(function(dt) {
@@ -213,6 +261,7 @@ economy.start = function() {
 			var stepX = speedX * dt;
 			planeY += speedY * dt;
 			
+			skyX = (skyX + stepX * 0.5) % 1600;
 			bgX = (bgX + stepX) % 256;
 			
 			planePosition.x = planeX;
@@ -233,6 +282,7 @@ economy.start = function() {
 						new lime.animation.ScaleTo(2).setDuration(.5)
 					);
 					bonus.sprite.runAction(animation);
+					playChime();
 				}
 				
 				if (position.x < -32) {
@@ -247,7 +297,7 @@ economy.start = function() {
 				bonusTimeout = goog.math.uniformRandom(constants.bonusXmin, constants.bonusXmax);
 				var bonusScore = goog.math.uniformRandom(constants.bonusScoreMin, constants.bonusScoreMax);
 				var bonus = {
-					sprite: new lime.Sprite().setFill(constants.imagesPath + 'dollar.png').setPosition(constants.width + 32, goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax)).setScale(bonusScore / constants.bonusScoreMax),
+					sprite: new lime.Sprite().setFill(constants.assetPath + 'dollar.png').setPosition(constants.width + 32, goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax)).setScale(bonusScore / constants.bonusScoreMax),
 					score: bonusScore
 				};
 				bonuses.push(bonus);
@@ -285,9 +335,20 @@ economy.start = function() {
 				}
 				
 				scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
+				
+				wind.baseElement.volume = Math.min(wind.baseElement.volume + constants.windFade * dt, 1);
+			} else {
+				wind.baseElement.volume = Math.max(wind.baseElement.volume - constants.windFade * dt, 0);
+			}
+			
+			chimeTimeout -= dt;
+			if (chimeTimeout <= 0) {
+				chimes.baseElement.volume = Math.max(chimes.baseElement.volume - constants.chimeFade * dt, 0);
+				console.log(chimes.baseElement.volume);
 			}
 		}
 		
+		skyLayer.setPosition(-skyX, 0);
 		backgroundLayer.setPosition(-bgX, 0);
 		
 		planeSprite.setPosition(planeX, planeY);
