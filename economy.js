@@ -38,7 +38,7 @@ economy.start = function(){
 	
 	var bgX = 0;
 	
-	var bonusLayer = new lime.Layer().setPosition(constants.width / 2, 0);
+	var bonusLayer = new lime.Layer()
 	scene.appendChild(bonusLayer);
 	
 	var planeLayer = new lime.Layer();
@@ -67,42 +67,7 @@ economy.start = function(){
 	
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
-/*
-	director.makeMobileWebAppCapable();
-
-	//add some interaction
-	goog.events.listen(target,['mousedown','touchstart'],function(e){
-
-		//animate
-		target.runAction(new lime.animation.Spawn(
-			new lime.animation.FadeTo(.5).setDuration(.2),
-			new lime.animation.ScaleTo(1.5).setDuration(.8)
-		));
-
-		title.runAction(new lime.animation.FadeTo(1));
-
-		//let target follow the mouse/finger
-		e.startDrag();
-
-    event.swallow(['touchmove', 'mousemove'],
-        goog.bind(this.moveHandler_, this));
-    event.swallow(['touchend', 'touchcancel', 'mouseup'],
-        goog.bind(this.releaseHandler_, this));
-
-		//listen for end event
-		e.swallow(['mouseup','touchend'],function(){
-			target.runAction(new lime.animation.Spawn(
-				new lime.animation.FadeTo(1),
-				new lime.animation.ScaleTo(1),
-				new lime.animation.MoveTo(512,384)
-			));
-
-			title.runAction(new lime.animation.FadeTo(0));
-		});
-
-
-	});
-*/
+	
 	director.replaceScene(scene);
 	
 	goog.events.listen(div, 'mousemove', function(event) {
@@ -122,57 +87,17 @@ economy.start = function(){
 	
 	var playing = false;
 	var crashed = false;
-	var dollarBonus, upBonus, downBonus;
-
-	var bonus = {
-		dollar: {
-			filename: 'dollar.png',
-			min: 600,
-			max: 800,
-			handler: function() {
-			}
-		},
-		up: {
-			filename: 'up.png',
-			min: 1000,
-			max: 2000,
-			handler: function() {
-				planeSpeed += constants.bonusUp;
-			}
-		},
-		down: {
-			filename: 'down.png',
-			min: 1000,
-			max: 3000,
-			handler: function() {
-				planeSpeed += constants.bonusDown;
-				if (planeSpeed < 0) {
-					planeSpeed = 0;
-				}
-			}
-		}
-	};
-	
-	var newBonus = function(i) {
-		if (!bonus[i].sprite) {
-			bonus[i].sprite = new lime.Sprite().setFill(constants.imagesPath + bonus[i].filename).setAnchorPoint(0.5, 0.5);
-		}
-		bonus[i].sprite.setOpacity(1).setScale(1).setPosition(Math.max(goog.math.uniformRandom(bonus[i].min, bonus[i].max) / (bonus[i].rate || 1), constants.width / 2 + 32), goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax));
-		delete bonus[i].took;
-		bonusLayer.appendChild(bonus[i].sprite);
-	};
+	var bonusTimeout = 0;
+	var bonuses = [];
 	
 	var start = function() {
 		playing = false;
 		crashed = false;
-		planeX = 0;
+		planeX = constants.width / 4;
 		planeY = constants.height / 2;
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
-		
-		for (var i in bonus) {
-			newBonus(i);
-		}
+		bonusTimeout = 0;
 		
 		var startCountIndex = 3;
 		var startCount = function() {
@@ -228,53 +153,51 @@ economy.start = function(){
 			
 			angle = goog.math.toDegrees(angleRadians);
 			
-			if (crashed) {
-				planeSpeed *= constants.groundFriction;
-			} else {
-				planeSpeed *= constants.friction;
-			}
-			
-			var speedX = planeSpeed * Math.cos(angleRadians);
-			var speedY = (crashed) ? 0 : (planeSpeed * Math.sin(angleRadians) +Math.exp(- planeSpeed * constants.stall) * constants.gravity * dt);
-			
-			planeSpeed = Math.sqrt(speedX * speedX + speedY * speedY);
+			var speedX = planeSpeed;
+			var speedY = (crashed) ? 0 : (planeSpeed * Math.sin(angleRadians));
 			
 			var stepX = speedX * dt;
-			planeX += stepX;
 			planeY += speedY * dt;
 			
 			bgX = (bgX + stepX) % 256;
 			
-			var planePosition = new goog.math.Coordinate(0, planeY);
-			for (var i in bonus) {
-				var position = bonus[i].sprite.getPosition();
+			var planePosition = new goog.math.Coordinate(planeX, planeY);
+			for (var i = 0; i < bonuses.length; ++i) {
+				var bonus = bonuses[i];
+				var position = bonus.sprite.getPosition();
 				position.x -= stepX * constants.bonusSpeed;
-				bonus[i].sprite.setPosition(position)
-				if (!bonus[i].took && goog.math.Coordinate.distance(position, planePosition) < 32) {
-					bonus[i].took = true;
+				bonus.sprite.setPosition(position)
+				if (!bonus.taken && goog.math.Coordinate.distance(position, planePosition) < 32) {
+					bonus.taken = true;
 					var animation = new lime.animation.Spawn(
 						new lime.animation.FadeTo(0).setDuration(.5),
 						new lime.animation.ScaleTo(2).setDuration(.5)
 					);
-					bonus[i].sprite.runAction(animation);
-					bonus[i].handler();
+					bonus.sprite.runAction(animation);
 				}
-				if (position.x < - constants.width / 2 - 32) {
-					newBonus(i);
+				
+				if (position.x < - 32) {
+					bonusLayer.removeChild(bonus.sprite);
+					bonuses.splice(i, 1);
+					--i;
 				}
 			}
 			
-			if (planeY >= constants.crashY) {
-				planeY = constants.crashY;
-				if (!crashed) {
-					crash();
-				}
+			bonusTimeout -= stepX;
+			if (bonusTimeout < 0) {
+				bonusTimeout = goog.math.uniformRandom(constants.bonusXmin, constants.bonusXmax);
+				var bonus = {
+					sprite: new lime.Sprite().setFill(constants.imagesPath + 'dollar.png').setPosition(constants.width + 32, goog.math.uniformRandom(constants.bonusYmin, constants.bonusYmax)).setScale(1),
+					value: 1
+				};
+				bonuses.push(bonus);
+				bonusLayer.appendChild(bonus.sprite);
 			}
 		}
 		
 		backgroundLayer.setPosition(-bgX, 0);
 		
-		planeSprite.setPosition(constants.width / 2, planeY);
+		planeSprite.setPosition(planeX, planeY);
 		planeSprite.setRotation(-angle);
 	});
 	

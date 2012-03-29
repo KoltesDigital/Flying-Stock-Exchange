@@ -1,10 +1,10 @@
 goog.provide('constants');
 
-/** @const */ /** @const */ constants.bonusYmin = 150;
+/** @const */ constants.bonusXmin = 200;
+/** @const */ constants.bonusXmax = 1200;
+/** @const */ constants.bonusYmin = 150;
 /** @const */ constants.bonusYmax = 618;
-/** @const */ constants.bonusSpeed = 0.5;
-/** @const */ constants.bonusUp = 1;
-/** @const */ constants.bonusDown = -1;
+/** @const */ constants.bonusSpeed = 0.8;
 
 /** @const */ constants.crashY = 668;
 
@@ -20,7 +20,7 @@ goog.provide('constants');
 
 /** @const */ constants.imagesPath = 'images/';
 
-/** @const */ constants.initialSpeed = 2;
+/** @const */ constants.initialSpeed = 1;
 
 /** @const */ constants.pixelToAngle = 0.1;
 
