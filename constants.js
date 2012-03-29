@@ -27,6 +27,6 @@ goog.provide('constants');
 
 /** @const */ constants.pixelToAngle = 0.1;
 
-/** @const */ constants.timeFactor = 10000000;
+/** @const */ constants.timeFactor = 1000000;
 
 /** @const */ constants.width = 1024;

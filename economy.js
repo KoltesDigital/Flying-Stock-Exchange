@@ -21,8 +21,17 @@ goog.require('lime.animation.ScaleTo');
 goog.require('lime.animation.MoveBy');
 goog.require('constants');
 
-economy.start = function(){
+function scoreColor(score) {
+	if (score > constants.initialScore / 2) {
+		var t = (score - constants.initialScore / 2) / (constants.initialScore / 2);
+		return 'rgb(' + Math.floor(204 * (1 - t)) + ',204,0)';
+	} else {
+		var t = score / (constants.initialScore / 2);
+		return 'rgb(204,' + Math.floor(204 * t) + ',0)';
+	}
+}
 
+economy.start = function() {
 	var div = document.getElementById('game');
 	div.style.width = constants.width + 'px';
 	div.style.height = constants.height + 'px';
@@ -89,10 +98,10 @@ economy.start = function(){
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 	
-	var dateLabel = new lime.Label('').setFontColor('#000000').setFontSize(30).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
+	var dateLabel = new lime.Label('').setFontColor('#000000').setFontSize(20).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
 	interfaceLayer.appendChild(dateLabel);
 	
-	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 60).setAnchorPoint(1, 0).setAlign('right');
+	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(50).setPosition(constants.width - 20, 50).setAnchorPoint(1, 0).setAlign('right');
 	interfaceLayer.appendChild(scoreLabel);
 	
 	director.replaceScene(scene);
@@ -130,10 +139,12 @@ economy.start = function(){
 		planeSpeed = constants.initialSpeed;
 		bgX = 0;
 		score = constants.initialScore;
-		scoreLabel.setText('$' + Math.round(score));
+		scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
 		date = new Date();
 		dateLabel.setText(date.toLocaleDateString());
 		bonusTimeout = 0;
+		bonuses = [];
+		bonusLayer.removeAllChildren();
 		angle = 0;
 		curveTimeout = 0;
 		planePosition = new goog.math.Coordinate(planeX, planeY);
@@ -273,7 +284,7 @@ economy.start = function(){
 					crash();
 				}
 				
-				scoreLabel.setText('$' + Math.round(score));
+				scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
 			}
 		}
 		
