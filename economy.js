@@ -61,6 +61,9 @@ economy.start = function() {
 	
 	var bgX = 0;
 	
+	var toySprite = new lime.Sprite();
+	scene.appendChild(toySprite);
+	
 	var childSprite = new lime.Sprite().setFill(constants.assetPath + 'childb.png').setOpacity(0);
 	backgroundLayer.appendChild(childSprite);
 	
@@ -179,6 +182,7 @@ economy.start = function() {
 		planePosition = new goog.math.Coordinate(planeX, planeY);
 		curve = [planePosition];
 		canvas.update();
+		toySprite.setPosition(-128, 0);
 		
 		wind.baseElement.volume = 0;
 		
@@ -292,6 +296,15 @@ economy.start = function() {
 				}
 			}
 			
+			var position = toySprite.getPosition();
+			position.x -= stepX;
+			if (position.x < -64) {
+				var i = goog.math.randomInt(constants.toys);
+				toySprite.setFill(constants.assetPath + 'toys' + i + '.png').setPosition(goog.math.uniformRandom(constants.toysXmin, constants.toysXmax), constants.toysY);
+			} else {
+				toySprite.setPosition(position)
+			}
+			
 			bonusTimeout -= stepX;
 			if (bonusTimeout < 0) {
 				bonusTimeout = goog.math.uniformRandom(constants.bonusXmin, constants.bonusXmax);
@@ -344,7 +357,6 @@ economy.start = function() {
 			chimeTimeout -= dt;
 			if (chimeTimeout <= 0) {
 				chimes.baseElement.volume = Math.max(chimes.baseElement.volume - constants.chimeFade * dt, 0);
-				console.log(chimes.baseElement.volume);
 			}
 		}
 		
