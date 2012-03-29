@@ -11,6 +11,8 @@ goog.provide('constants');
 /** @const */ constants.crashFriction = 0.95;
 /** @const */ constants.crashY = 668;
 
+/** @const */ constants.curveSpeed = 0.2;
+
 /** @const */ constants.gravity = 0.02;
 
 /** @const */ constants.height = 768;

@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="bonus.svg"
-   inkscape:export-filename="D:\Code\limejs\economy\images\down.png"
+   inkscape:export-filename="D:\Code\limejs\economy\images\dollar.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -55,10 +55,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="-45.75"
+     inkscape:cx="-84.75"
      inkscape:cy="65.727948"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1018"
@@ -81,7 +81,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Dollar"
-     style="display:none">
+     style="display:inline">
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#00c400;fill-opacity:1;stroke:none;font-family:Sans"
@@ -94,30 +94,6 @@
          x="16.714844"
          y="50.853516"
          style="font-size:56px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#00c400;fill-opacity:1;font-family:Arial;-inkscape-font-specification:Arial Bold">$</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="Up"
-     style="display:none" />
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Down">
-    <rect
-       style="fill:#c40000;fill-opacity:1;stroke:none"
-       id="rect4840"
-       width="14.428004"
-       height="31.164488"
-       x="24.785999"
-       y="-39.1096"
-       transform="scale(1,-1)" />
-    <path
-       style="fill:#c40000;fill-opacity:1;stroke:none"
-       d="M 11.420681,33.771243 32,54.350563 52.579319,33.771243 z"
-       id="rect4842"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
   </g>
   <g
      inkscape:label="Bubble"

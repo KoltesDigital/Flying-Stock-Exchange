@@ -8,11 +8,13 @@ goog.provide('economy');
 
 goog.require('goog.math');
 goog.require('goog.math.Coordinate');
+goog.require('lime.CanvasContext');
 goog.require('lime.Director');
-goog.require('lime.Scene');
-goog.require('lime.Layer');
 goog.require('lime.GlossyButton');
 goog.require('lime.Label');
+goog.require('lime.Layer');
+goog.require('lime.Renderer');
+goog.require('lime.Scene');
 goog.require('lime.animation.Spawn');
 goog.require('lime.animation.FadeTo');
 goog.require('lime.animation.ScaleTo');
@@ -37,6 +39,25 @@ economy.start = function(){
 	}
 	
 	var bgX = 0;
+	
+	var curve = [];
+	
+	var canvas = new lime.CanvasContext().setSize(constants.width, constants.height).setAnchorPoint(0, 0);
+	canvas.draw = function(ctx) {
+		ctx.lineWidth = 5;
+		ctx.lineCap = 'round'; 
+		for (var i = 0; i < curve.length - 1; ++i) {
+			p1 = curve[i];
+			p2 = curve[i+1];
+			ctx.strokeStyle = (p2.y > p1.y) ? '#CC0000' : '#00CC00';
+			
+			ctx.beginPath();
+			ctx.moveTo(p1.x, p1.y);
+			ctx.lineTo(p2.x, p2.y);
+			ctx.stroke();
+		}
+	}
+	scene.appendChild(canvas);
 	
 	var bonusLayer = new lime.Layer()
 	scene.appendChild(bonusLayer);
@@ -94,6 +115,8 @@ economy.start = function(){
 	var bonusTimeout = 0;
 	var bonuses = [];
 	var angle = 0;
+	var curveTimeout = 0;
+	var planePosition;
 	
 	var start = function() {
 		playing = false;
@@ -106,6 +129,10 @@ economy.start = function(){
 		scoreLabel.setText('$' + Math.round(score));
 		bonusTimeout = 0;
 		angle = 0;
+		curveTimeout = 0;
+		planePosition = new goog.math.Coordinate(planeX, planeY);
+		curve = [planePosition];
+		canvas.update();
 		
 		var startCountIndex = 3;
 		var startCount = function() {
@@ -171,7 +198,9 @@ economy.start = function(){
 			
 			bgX = (bgX + stepX) % 256;
 			
-			var planePosition = new goog.math.Coordinate(planeX, planeY);
+			planePosition.x = planeX;
+			planePosition.y = planeY;
+			
 			for (var i = 0; i < bonuses.length; ++i) {
 				var bonus = bonuses[i];
 				var position = bonus.sprite.getPosition();
@@ -189,7 +218,7 @@ economy.start = function(){
 					bonus.sprite.runAction(animation);
 				}
 				
-				if (position.x < - 32) {
+				if (position.x < -32) {
 					bonusLayer.removeChild(bonus.sprite);
 					bonuses.splice(i, 1);
 					--i;
@@ -207,6 +236,25 @@ economy.start = function(){
 				bonuses.push(bonus);
 				bonusLayer.appendChild(bonus.sprite);
 			}
+			
+			for (var i = 0; i < curve.length; ++i) {
+				var position = curve[i];
+				position.x -= stepX * constants.curveSpeed;
+				
+				if (position.x < -60) {
+					curve.splice(i, 1);
+					--i;
+				}
+			}
+			if (planeY < constants.height) {
+				--curveTimeout;
+				if (curveTimeout < 0) {
+					curveTimeout = 10;
+					planePosition = new goog.math.Coordinate(planeX, planeY);
+					curve.push(planePosition);
+				}
+			}
+			canvas.update();
 			
 			if (!crashed) {
 				score -= dt * constants.loss;
