@@ -89,7 +89,10 @@ economy.start = function(){
 	var crashLabel = new lime.Label('CRASH').setFontColor('#FF0000').setFontSize(120).setOpacity(0);
 	interfaceLayer.appendChild(crashLabel);
 	
-	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
+	var dateLabel = new lime.Label('').setFontColor('#000000').setFontSize(30).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
+	interfaceLayer.appendChild(dateLabel);
+	
+	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(40).setPosition(constants.width - 20, 60).setAnchorPoint(1, 0).setAlign('right');
 	interfaceLayer.appendChild(scoreLabel);
 	
 	director.replaceScene(scene);
@@ -111,7 +114,8 @@ economy.start = function(){
 	
 	var playing = false;
 	var crashed = false;
-	var score = 0;
+	var score;
+	var date;
 	var bonusTimeout = 0;
 	var bonuses = [];
 	var angle = 0;
@@ -127,6 +131,8 @@ economy.start = function(){
 		bgX = 0;
 		score = constants.initialScore;
 		scoreLabel.setText('$' + Math.round(score));
+		date = new Date();
+		dateLabel.setText(date.toLocaleDateString());
 		bonusTimeout = 0;
 		angle = 0;
 		curveTimeout = 0;
@@ -258,6 +264,9 @@ economy.start = function(){
 			
 			if (!crashed) {
 				score -= dt * constants.loss;
+				
+				date = new Date(date.getTime() + dt * constants.timeFactor);
+				dateLabel.setText(date.toLocaleDateString());
 				
 				if (score < 0) {
 					score = 0;
