@@ -11,3 +11,12 @@ body  {
 #game {
     margin: 0px auto;
 }
+
+#caption {
+	text-align: center;
+	font-family: Arial;
+}
+
+#caption div {
+	margin: 20px;
+}
