@@ -107,7 +107,7 @@ economy.start = function() {
 	var interfaceLayer = new lime.Layer();
 	scene.appendChild(interfaceLayer);
 	
-	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(320, 80)/*.setScale(2, 2)*/.setPosition(constants.width / 2, constants.height / 2);
+	var startButton = new lime.GlossyButton('Start playing').setColor('#00FF00').setSize(320, 80).setPosition(constants.width / 2, constants.height / 2);
 	interfaceLayer.appendChild(startButton);
 	
 	var startCountLabel = new lime.Label().setFontColor('#000000').setFontSize(60).setOpacity(0).setPosition(constants.width / 2, constants.height / 2);
@@ -140,19 +140,9 @@ economy.start = function() {
 	}
 	catch (e) {}
 	
-	goog.events.listen(div, 'mousemove', function(event) {
-		if (event.pageX == null)
-		{
-			// IE case
-			mouseX = event.clientX + document.body.scrollLeft - div.offsetLeft;
-			mouseY = event.clientY + document.body.scrollTop - div.offsetTop;
-		}
-		else
-		{
-			// all other browsers
-			mouseX = event.pageX - div.offsetLeft;
-			mouseY = event.pageY - div.offsetTop;
-		}
+	goog.events.listen(document.body, 'mousemove', function(event) {
+		mouseX = event.clientX + document.body.scrollLeft - div.offsetLeft;
+		mouseY = event.clientY + document.body.scrollTop - div.offsetTop;
 	});
 	
 	var playing = false;
