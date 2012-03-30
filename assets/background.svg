@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="background.svg"
-   inkscape:export-filename="D:\Code\limejs\economy\images\background.png"
+   inkscape:export-filename="D:\Code\limejs\economy\assets\background.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -24,22 +24,22 @@
     <linearGradient
        id="linearGradient3760">
       <stop
-         style="stop-color:#d7f2db;stop-opacity:1;"
+         style="stop-color:#91c0e4;stop-opacity:1;"
          offset="0"
          id="stop3762" />
       <stop
-         style="stop-color:#f3fbf3;stop-opacity:1;"
+         style="stop-color:#bcd4e7;stop-opacity:1;"
          offset="1"
          id="stop3764" />
     </linearGradient>
     <linearGradient
        id="linearGradient3752">
       <stop
-         style="stop-color:#e7f1f1;stop-opacity:1;"
+         style="stop-color:#3883bb;stop-opacity:1;"
          offset="0"
          id="stop3754" />
       <stop
-         style="stop-color:#f9fdfc;stop-opacity:1;"
+         style="stop-color:#e7f5ff;stop-opacity:1;"
          offset="1"
          id="stop3756" />
     </linearGradient>
@@ -60,7 +60,8 @@
        y1="1157.4404"
        x2="124.24924"
        y2="952.35706"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.84426815,0,0,0.53571429,27.848715,442.16816)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -70,7 +71,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="389.00036"
+     inkscape:cx="166.14322"
      inkscape:cy="277.18893"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -106,9 +107,9 @@
     <rect
        style="fill:url(#linearGradient3766);fill-opacity:1;stroke:none"
        id="rect4285"
-       width="339.41125"
-       height="200"
-       x="-50.507137"
+       width="286.55411"
+       height="107.14286"
+       x="-14.792851"
        y="952.36218" />
   </g>
 </svg>

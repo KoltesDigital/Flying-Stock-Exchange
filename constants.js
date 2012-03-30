@@ -36,8 +36,8 @@ goog.provide('constants');
 /** @const */ constants.timeFactor = 1000000;
 
 /** @const */ constants.toys = 3;
-/** @const */ constants.toysXmin = 2000;
-/** @const */ constants.toysXmax = 4000;
+/** @const */ constants.toysXmin = 4000;
+/** @const */ constants.toysXmax = 10000;
 /** @const */ constants.toysY = 700;
 
 /** @const */ constants.width = 1024;
