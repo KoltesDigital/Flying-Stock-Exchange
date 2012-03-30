@@ -124,18 +124,21 @@ economy.start = function() {
 	
 	director.replaceScene(scene);
 	
-	var wind = new lime.audio.Audio(constants.assetPath + 'wind.ogg');
-	wind.baseElement.loop = true;
-	
-	var chimes = new lime.audio.Audio(constants.assetPath + 'chimes.ogg');
-	var chimeTimes = [
-		0.354,
-		1.808,
-		3.314,
-		4.736,
-		6.159,
-		7.532
-	];
+	try {
+		var wind = new lime.audio.Audio(constants.assetPath + 'wind.ogg');
+		wind.baseElement.loop = true;
+		
+		var chimes = new lime.audio.Audio(constants.assetPath + 'chimes.ogg');
+		var chimeTimes = [
+			0.354,
+			1.808,
+			3.314,
+			4.736,
+			6.159,
+			7.532
+		];
+	}
+	catch (e) {}
 	
 	goog.events.listen(div, 'mousemove', function(event) {
 		if (event.pageX == null)
@@ -184,7 +187,9 @@ economy.start = function() {
 		canvas.update();
 		toySprite.setPosition(-128, 0);
 		
-		wind.baseElement.volume = 0;
+		if (wind) {
+			wind.baseElement.volume = 0;
+		}
 		
 		childSprite.setFill(constants.assetPath + 'childa.png').setPosition(256, 650).setOpacity(1);
 		
@@ -203,7 +208,9 @@ economy.start = function() {
 				childSprite.setFill(constants.assetPath + 'childb.png');
 				var animation = new lime.animation.FadeTo(0).setDuration(.3);
 				childSprite.runAction(animation);
-				wind.play();
+				if (wind) {
+					wind.play();
+				}
 			} else {
 				--startCountIndex;
 				goog.events.listen(animation, lime.animation.Event.STOP, function() {
@@ -233,7 +240,7 @@ economy.start = function() {
 		}, 1000);
 	};
 	
-	var playChime = function() {
+	var playChime = chimes ? function() {
 		var i = goog.math.randomInt(chimeTimes.length);
 		var time = chimeTimes[i];
 		chimes.stop();
@@ -241,7 +248,7 @@ economy.start = function() {
 		chimes.baseElement.volume = constants.chimeVolume;
 		chimes.play();
 		chimeTimeout = constants.chimeDuration;
-	};
+	} : goog.nullFunction;
 	
 	lime.scheduleManager.schedule(function(dt) {
 		if (playing) {
@@ -349,14 +356,18 @@ economy.start = function() {
 				
 				scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
 				
-				wind.baseElement.volume = Math.min(wind.baseElement.volume + constants.windFade * dt, 1);
-			} else {
+				if (wind) {
+					wind.baseElement.volume = Math.min(wind.baseElement.volume + constants.windFade * dt, 1);
+				}
+			} else if (wind) {
 				wind.baseElement.volume = Math.max(wind.baseElement.volume - constants.windFade * dt, 0);
 			}
 			
-			chimeTimeout -= dt;
-			if (chimeTimeout <= 0) {
-				chimes.baseElement.volume = Math.max(chimes.baseElement.volume - constants.chimeFade * dt, 0);
+			if (chimes) {
+				chimeTimeout -= dt;
+				if (chimeTimeout <= 0) {
+					chimes.baseElement.volume = Math.max(chimes.baseElement.volume - constants.chimeFade * dt, 0);
+				}
 			}
 		}
 		
