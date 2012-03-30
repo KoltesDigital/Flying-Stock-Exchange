@@ -23,11 +23,11 @@ goog.provide('constants');
 
 /** @const */ constants.assetPath = 'assets/';
 
-/** @const */ constants.initialScore = 1000;
+/** @const */ constants.initialScore = 10000;
 
 /** @const */ constants.initialSpeed = 1;
 
-/** @const */ constants.loss = 0.1;
+/** @const */ constants.loss = 1;
 
 /** @const */ constants.windFade = 0.001;
 
