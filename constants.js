@@ -8,8 +8,8 @@ goog.provide('constants');
 /** @const */ constants.bonusScoreMax = 150;
 /** @const */ constants.bonusSpeed = 0.8;
 
-/** @const */ constants.chimeDuration = 500;
-/** @const */ constants.chimeFade = 0.002;
+/** @const */ constants.chimeDuration = 300;
+/** @const */ constants.chimeFade = 0.005;
 /** @const */ constants.chimeVolume = 0.5;
 
 /** @const */ constants.crashFriction = 0.95;
