@@ -127,7 +127,7 @@ economy.start = function() {
 	var wind = new lime.audio.Audio(constants.assetPath + 'wind.ogg');
 	wind.baseElement.loop = true;
 	
-	var chimes = new lime.audio.Audio(constants.assetPath + 'chimes.mp3');
+	var chimes = new lime.audio.Audio(constants.assetPath + 'chimes.ogg');
 	var chimeTimes = [
 		0.354,
 		1.808,
