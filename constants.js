@@ -29,14 +29,14 @@ goog.provide('constants');
 
 /** @const */ constants.loss = 1;
 
-/** @const */ constants.particleAngleMin = 2.2;
+/** @const */ constants.particleAngleMin = 2.6;
 /** @const */ constants.particleAngleMax = 3.3;
-/** @const */ constants.particleDelayMin = 100;
-/** @const */ constants.particleDelayMax = 200;
+/** @const */ constants.particleDelayMin = 80;
+/** @const */ constants.particleDelayMax = 100;
 /** @const */ constants.particleDurationMin = 500;
 /** @const */ constants.particleDurationMax = 1500;
-/** @const */ constants.particlePowerMin = 0.07;
-/** @const */ constants.particlePowerMax = 0.1;
+/** @const */ constants.particlePowerMin = 0.1;
+/** @const */ constants.particlePowerMax = 0.3;
 
 /** @const */ constants.pixelToAngle = 0.1;
 

@@ -170,7 +170,7 @@ economy.start = function() {
 		angle = -0.2;
 		bgX = 0;
 		score = constants.initialScore;
-		scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
+		scoreLabel.setText('$10.000.000.000').setFontColor(scoreColor(score));
 		date = new Date();
 		dateLabel.setText(date.toLocaleDateString());
 		bonusTimeout = 0;
@@ -348,7 +348,6 @@ economy.start = function() {
 					};
 					particles.push(particle);
 					particleLayer.appendChild(particle.sprite);
-					console.log(planeX, planeY);
 				}
 			}
 			
@@ -379,10 +378,12 @@ economy.start = function() {
 				
 				if (score < 0) {
 					score = 0;
+					scoreLabel.setText('$0').setFontColor(scoreColor(score));
 					crash();
+				} else {
+					var text = '$' + Math.floor(score / 1000) + '.' + (Math.floor(score) % 1000) + '.000.000';
+					scoreLabel.setText(text).setFontColor(scoreColor(score));
 				}
-				
-				scoreLabel.setText('$' + Math.round(score)).setFontColor(scoreColor(score));
 				
 				if (wind) {
 					wind.baseElement.volume = Math.min(wind.baseElement.volume + constants.windFade * dt, 1);
