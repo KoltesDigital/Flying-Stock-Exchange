@@ -4,8 +4,8 @@ goog.provide('constants');
 /** @const */ constants.bonusXmax = 1200;
 /** @const */ constants.bonusYmin = 150;
 /** @const */ constants.bonusYmax = 618;
-/** @const */ constants.bonusScoreMin = 50;
-/** @const */ constants.bonusScoreMax = 150;
+/** @const */ constants.bonusScoreMin = 500;
+/** @const */ constants.bonusScoreMax = 1500;
 /** @const */ constants.bonusSpeed = 0.8;
 
 /** @const */ constants.chimeDuration = 300;
