@@ -29,7 +29,14 @@ goog.provide('constants');
 
 /** @const */ constants.loss = 1;
 
-/** @const */ constants.windFade = 0.001;
+/** @const */ constants.particleAngleMin = 2.2;
+/** @const */ constants.particleAngleMax = 3.3;
+/** @const */ constants.particleDelayMin = 100;
+/** @const */ constants.particleDelayMax = 200;
+/** @const */ constants.particleDurationMin = 500;
+/** @const */ constants.particleDurationMax = 1500;
+/** @const */ constants.particlePowerMin = 0.07;
+/** @const */ constants.particlePowerMax = 0.1;
 
 /** @const */ constants.pixelToAngle = 0.1;
 
@@ -41,3 +48,5 @@ goog.provide('constants');
 /** @const */ constants.toysY = 700;
 
 /** @const */ constants.width = 1024;
+
+/** @const */ constants.windFade = 0.001;

@@ -89,6 +89,9 @@ economy.start = function() {
 	var bonusLayer = new lime.Layer()
 	scene.appendChild(bonusLayer);
 	
+	var particleLayer = new lime.Layer()
+	scene.appendChild(particleLayer);
+	
 	var planeLayer = new lime.Layer();
 	scene.appendChild(planeLayer);
 	
@@ -119,7 +122,7 @@ economy.start = function() {
 	var dateLabel = new lime.Label('').setFontColor('#000000').setFontSize(20).setPosition(constants.width - 20, 20).setAnchorPoint(1, 0).setAlign('right');
 	interfaceLayer.appendChild(dateLabel);
 	
-	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(50).setPosition(constants.width - 20, 50).setAnchorPoint(1, 0).setAlign('right');
+	var scoreLabel = new lime.Label('').setFontColor('#00CC00').setFontSize(50).setPosition(constants.width / 2, 20).setAnchorPoint(0.5, 0).setAlign('center');
 	interfaceLayer.appendChild(scoreLabel);
 	
 	director.replaceScene(scene);
@@ -151,6 +154,8 @@ economy.start = function() {
 	var date;
 	var bonusTimeout = 0;
 	var bonuses = [];
+	var particles = [];
+	var particleTimeout = 0;
 	var angle = 0;
 	var curveTimeout = 0;
 	var planePosition;
@@ -312,6 +317,39 @@ economy.start = function() {
 				};
 				bonuses.push(bonus);
 				bonusLayer.appendChild(bonus.sprite);
+			}
+			
+			for (var i = 0; i < particles.length; ++i) {
+				var particle = particles[i];
+				particle.time -= dt;
+				if (particle.time < 0) {
+					particles.splice(i, 1);
+					--i;
+					particleLayer.removeChild(particle.sprite);
+				} else {
+					var position = particle.sprite.getPosition();
+					position.x += particle.dx * dt;
+					position.y += particle.dy * dt;
+					particle.sprite.setPosition(position);
+				}
+			}
+			
+			if (!crashed) {
+				particleTimeout -= dt;
+				if (particleTimeout < 0) {
+					particleTimeout = goog.math.uniformRandom(constants.particleDelayMin, constants.particleDelayMax);
+					var a = goog.math.uniformRandom(constants.particleAngleMin, constants.particleAngleMax);
+					var power = goog.math.uniformRandom(constants.particlePowerMin, constants.particlePowerMax);
+					var particle = {
+						sprite: new lime.Label('$').setFontColor(scoreColor(score)).setFontSize(14).setPosition(planeX, planeY),
+						time: goog.math.uniformRandom(constants.particleDurationMin, constants.particleDurationMax),
+						dx: power * Math.cos(a),
+						dy: power * Math.sin(a)
+					};
+					particles.push(particle);
+					particleLayer.appendChild(particle.sprite);
+					console.log(planeX, planeY);
+				}
 			}
 			
 			for (var i = 0; i < curve.length; ++i) {
